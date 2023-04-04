@@ -1,0 +1,1 @@
+export const greenLeafBackgroundImage = require("./images/Papel_de_Parede2.png");
