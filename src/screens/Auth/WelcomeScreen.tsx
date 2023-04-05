@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, TextInput, Button, Image, ImageBackground } from "react-native";
+import {
+    StyleSheet,
+    Text,
+    View,
+    TextInput,
+    Button,
+    Image,
+    ImageBackground
+} from "react-native";
 import React, { useState } from "react";
 import { white, boldOrange, boldGreen, lightGreen } from '../../assets/colors';
 import PrimaryButton from "../../components/PrimaryButton";
@@ -15,7 +23,10 @@ const WelcomeScreen = ({ navigation }) => {
                         <Image source={{ uri: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1453&q=80' }} style={styles.image} />
                     </View>
                     <PrimaryButton title="Sign Up" style={styles.signUpButton} />
-                    <TransparentButton title="Already have an account" style={styles.signInButton} />
+                    <TransparentButton
+                        title="Already have an account"
+                        style={styles.signInButton}
+                        onButtonClicked={() => { navigation.navigate("Sign In") }} />
                 </View>
             </ImageBackground>
         </View>
@@ -64,7 +75,7 @@ const styles = StyleSheet.create({
     signUpButton: {
         marginLeft: 28,
         marginRight: 28,
-        marginTop: 30
+        marginTop: 30,
     },
     signInButton: {
         marginLeft: 28,

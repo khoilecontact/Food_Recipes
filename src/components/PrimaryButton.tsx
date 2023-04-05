@@ -28,7 +28,12 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         backgroundColor: mediumOrange,
         height: 56,
-        justifyContent: 'center'
+        justifyContent: 'center',
+        shadowColor: 'rgba(0, 0, 0, 0.1)',
+        shadowOpacity: 0.8,
+        elevation: 2,
+        shadowRadius: 15,
+        shadowOffset: { width: 1, height: 13}
     },
     title: {
         fontSize: 22,
