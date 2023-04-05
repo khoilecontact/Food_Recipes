@@ -2,6 +2,7 @@ import React from "react";
 import WelcomeScreen from "../screens/Auth/WelcomeScreen";
 import SignInScreen from '../screens/Auth/SignInScreen';
 import SignUpScreen from '../screens/Auth/SignUpScreen';
+import SplashScreen from '../screens/SplashScreen';
 
 import {
     createStackNavigator,
@@ -13,6 +14,14 @@ const Screens = createStackNavigator();
 const AuthStack = () => {
     return (
         <Screens.Navigator>
+            <Screens.Screen
+                name="Splash"
+                component={SplashScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+
             <Screens.Screen
                 name="Welcome"
                 component={WelcomeScreen}
