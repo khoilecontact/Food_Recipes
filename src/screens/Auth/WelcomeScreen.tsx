@@ -22,7 +22,13 @@ const WelcomeScreen = ({ navigation }) => {
                     <View style={styles.imageContainer}>
                         <Image source={{ uri: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1453&q=80' }} style={styles.image} />
                     </View>
-                    <PrimaryButton title="Sign Up" style={styles.signUpButton} />
+
+                    <PrimaryButton 
+                    title="Sign Up" 
+                    style={styles.signUpButton} 
+                    onButtonClicked={() => {navigation.navigate("Sign Up")}}
+                    />
+
                     <TransparentButton
                         title="Already have an account"
                         style={styles.signInButton}
