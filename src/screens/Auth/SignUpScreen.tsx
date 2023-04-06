@@ -4,9 +4,12 @@ import {
     View,
     TextInput,
     Button,
+    ScrollView,
     Image,
     ImageBackground,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert,
+    ActivityIndicator
 } from "react-native";
 import React, { useState } from "react";
 import { Picker } from '@react-native-picker/picker';
@@ -17,8 +20,13 @@ import TitleText from "../../components/TitleText";
 import { generalStyles } from '../../assets/generalStyles';
 import FieldText from "../../components/FieldText";
 import PrimaryButton from "../../components/PrimaryButton";
+import { FirebaseManager } from '../../utils/Firebase';
+import { AsyncStorageManager } from "../../utils/AsyncStorage";
+import { CONST } from "../../utils/Constants";
 
 const SignUpScreen = ({ navigation }) => {
+    const [loading, setLoading] = useState(false);
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -29,11 +37,27 @@ const SignUpScreen = ({ navigation }) => {
         setIsShowPassword(!isShowPassword);
     };
 
+    const handleSignUp = () => {
+        setLoading(true);
+        FirebaseManager.signUp(name, email, password)
+            .then((user) => {
+                // User signed up successfully
+                AsyncStorageManager.save(CONST.USER_NAME, user.name)
+                AsyncStorageManager.save(CONST.USER_EMAIL, user.email)
+            })
+            .catch((error) => {
+                Alert.alert('Error', error)
+            })
+            .finally(() => {
+                setLoading(false);
+            })
+    }
+
     return (
-        <View style={styles.container}>
-            <ImageBackground
-                style={styles.backgroundImage}
-                source={lineBackgroundImage}>
+        <ImageBackground
+            style={styles.backgroundImage}
+            source={lineBackgroundImage}>
+            <ScrollView style={styles.container}>
                 <BackButton onButtonClicked={() => { navigation.goBack() }} />
                 <TitleText
                     style={generalStyles.title}
@@ -90,7 +114,7 @@ const SignUpScreen = ({ navigation }) => {
                 <View style={styles.pickerContainer}>
                     <Picker
                         selectedValue={sex}
-                        onValueChange={(itemValue, itemIndex) => {
+                        onValueChange={(itemValue, _) => {
                             setSex(itemValue)
                         }}>
                         <Picker.Item label="Male" value="Male" />
@@ -99,10 +123,20 @@ const SignUpScreen = ({ navigation }) => {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                    <PrimaryButton title="Sign In" style={styles.signUpButton} />
+                    <PrimaryButton
+                        title="Sign Up"
+                        style={styles.signUpButton}
+                        onButtonClicked={handleSignUp}
+                    />
                 </View>
-            </ImageBackground>
-        </View>
+
+                {loading && (
+                    <View style={styles.overlay}>
+                        <ActivityIndicator size='large' color={white} />
+                    </View>
+                )}
+            </ScrollView>
+        </ImageBackground>
     )
 }
 
@@ -110,13 +144,11 @@ export default SignUpScreen;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: white,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flex: 1
+        backgroundColor: 'transparent',
+        minHeight: '100%',
     },
     backgroundImage: {
-        flex: 1,
+        flexGrow: 1,
         resizeMode: 'cover',
         width: '100%',
         height: '100%',
@@ -148,5 +180,11 @@ const styles = StyleSheet.create({
     },
     signUpButton: {
         marginHorizontal: 30
-    }
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 })

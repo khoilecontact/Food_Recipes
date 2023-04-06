@@ -1,7 +1,21 @@
 // Import the functions you need from the SDKs you need
 import { getAnalytics } from "firebase/analytics";
 import * as firebase from 'firebase/app';
-import auth from '@react-native-firebase/auth'
+import { User } from '../models/User';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword
+} from 'firebase/auth'
+import {
+  getDatabase,
+  ref,
+  set,
+  onValue,
+  push,
+  update,
+  remove
+} from 'firebase/database';
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -21,28 +35,49 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = firebase.initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
+const auth = getAuth(app);
+const database = getDatabase(app);
 
-const signUp =async (email: string, password: string) => {
-  try {
-    const userCredential = await auth().createUserWithEmailAndPassword(email, password);
-    return userCredential.user
-  } catch (error) {
-    console.log('Error signing up: ', error);
-    throw error
-  }
+const signUp = async (name: string, email: string, password: string) => {
+  return createUserWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = new User(userCredential.user.uid,
+        name,
+        userCredential.user.email ?? "")
+      return saveUser(user)
+        .then(() => user)
+    })
+    .catch((error) => {
+      console.log('Error signing up: ', error);
+      throw error;
+    })
 };
 
-const signIn = async (email: string, password: string) => {
-  try {
-    const userCredential = await auth().signInWithEmailAndPassword(email, password);
-    // User successfully logged in
-    return userCredential.user;
-  } catch (error) {
-    // Handle log in errors
-    console.log('Error logging in: ', error);
-    throw error;
-  }
+const signIn = (email: string, password: string) => {
+  return signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // User successfully logged in
+      return userCredential.user;
+    })
+    .catch((error) => {
+      // Handle log in errors
+      console.log('Error logging in: ', error);
+      throw error;
+    });
 };
+
+const saveUser = (user: User) => {
+  const usersRef = ref(database, `/users/${user.id}`);
+  return set(usersRef, user)
+    .then(() => {
+      console.log('User added to database successfully');
+    })
+    .catch((error) => {
+      console.log('Error adding user to database:', error);
+      throw error;
+    });
+};
+
 
 export const FirebaseManager = {
   signIn,
