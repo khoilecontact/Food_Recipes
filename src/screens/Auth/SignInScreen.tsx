@@ -6,7 +6,9 @@ import {
     Button,
     Image,
     ImageBackground,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert,
+    ActivityIndicator
 } from "react-native";
 import React, { useState } from "react";
 import { white } from '../../assets/colors';
@@ -16,21 +18,41 @@ import TitleText from "../../components/TitleText";
 import { generalStyles } from '../../assets/generalStyles';
 import FieldText from "../../components/FieldText";
 import PrimaryButton from "../../components/PrimaryButton";
+import { FirebaseManager } from "../../utils/Firebase";
+import { AsyncStorageManager } from "../../utils/AsyncStorage";
+import { CONST } from "../../utils/Constants";
+import { ScrollView } from 'react-native-gesture-handler';
 
 const SignInScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [isShowPassword, setIsShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const toggleShowPassword = () => {
         setIsShowPassword(!isShowPassword);
     };
 
+    const handleSignIn = () => {
+        setLoading(true);
+        FirebaseManager.signIn(email, password)
+            .then((user) => {
+                AsyncStorageManager.save(CONST.USER_NAME, user.name)
+                AsyncStorageManager.save(CONST.USER_EMAIL, user.email)
+            })
+            .catch((error) => {
+                Alert.alert('Error', error)
+            })
+            .finally(() => {
+                setLoading(false)
+            })
+    }
+
     return (
-        <View style={styles.container}>
-            <ImageBackground
-                style={styles.backgroundImage}
-                source={lineBackgroundImage}>
+        <ImageBackground
+            style={styles.backgroundImage}
+            source={lineBackgroundImage}>
+            <ScrollView style={styles.container}>
                 <BackButton onButtonClicked={() => { navigation.goBack() }} />
                 <TitleText
                     style={generalStyles.title}
@@ -70,12 +92,22 @@ const SignInScreen = ({ navigation }) => {
                         />
                     </TouchableOpacity>
                 </View>
-                
+
                 <View style={styles.buttonContainer}>
-                    <PrimaryButton title="Sign In" style={styles.logInButton}/>
+                    <PrimaryButton
+                        title="Sign In"
+                        style={styles.logInButton}
+                        onButtonClicked={handleSignIn}
+                    />
                 </View>
-            </ImageBackground>
-        </View>
+
+                {loading && (
+                    <View style={styles.overlay}>
+                        <ActivityIndicator size='large' color={white} />
+                    </View>
+                )}
+            </ScrollView>
+        </ImageBackground>
     )
 }
 
@@ -83,13 +115,11 @@ export default SignInScreen;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: white,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flex: 1
+        backgroundColor: 'transparent',
+        minHeight: '100%',
     },
     backgroundImage: {
-        flex: 1,
+        flexGrow: 1,
         resizeMode: 'cover',
         width: '100%',
         height: '100%',
@@ -113,8 +143,15 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         marginBottom: 80,
         marginHorizontal: 30
-      },
+    },
     logInButton: {
+        marginTop: 80,
         marginHorizontal: 30
-    }
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
 })
