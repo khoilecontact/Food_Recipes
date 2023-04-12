@@ -8,6 +8,7 @@ import {
     createStackNavigator,
     TransitionPresets
 } from "@react-navigation/stack";
+import HomeScreen from "../screens/HomeScreen";
 
 const Screens = createStackNavigator();
 
@@ -41,6 +42,14 @@ const AuthStack = () => {
             <Screens.Screen
                 name="Sign Up"
                 component={SignUpScreen}
+                options={{
+                    headerShown: false,
+                }}
+            />
+
+            <Screens.Screen
+                name="Home"
+                component={HomeScreen}
                 options={{
                     headerShown: false,
                 }}

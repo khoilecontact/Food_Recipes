@@ -7,3 +7,4 @@ export const hideIcon = require('./images/hide.png')
 export const showIcon = require('./images/show.png')
 
 export const splashIcon = require('./images/splash_logo.png')
+export const logo = require('./images/Logo.png')
