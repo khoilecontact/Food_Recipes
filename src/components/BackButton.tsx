@@ -9,13 +9,18 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { white, mediumOrange } from '../assets/colors';
 
 interface BackButtonProps {
+    backgroundColor?: string,
+    backColor?: string,
     onButtonClicked?: () => void
 }
 
 const BackButton = (props: BackButtonProps) => {
+    const backgroundColor = props.backgroundColor ?? mediumOrange
+    const backColor = props.backColor ?? white
+    
     return(
-        <TouchableOpacity style={styles.button} onPress={props.onButtonClicked}>
-            <Icon name='arrow-left' size={15} color={white}/>
+        <TouchableOpacity style={[styles.button, { backgroundColor: backgroundColor }]} onPress={props.onButtonClicked}>
+            <Icon name='arrow-left' size={15} color={backColor}/>
         </TouchableOpacity>
     )
 }
@@ -31,6 +36,5 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 40,
         marginLeft: 20,
-        backgroundColor: mediumOrange
     }
 })
